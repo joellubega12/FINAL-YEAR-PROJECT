@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # E-Voting System
 
 A secure and user-friendly electronic voting platform built with Django. This system allows voters to register, authenticate, and cast votes in elections while providing administrators with tools to manage elections, candidates, and results.
