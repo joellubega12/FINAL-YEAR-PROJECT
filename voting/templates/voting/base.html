@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Secure Election Platform</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    
+    <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/iCheck/all.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dist/css/AdminLTE.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dist/css/skins/_all-skins.min.css' %}">
+    <link rel="stylesheet" href="{% static 'toastr/toastr.min.css' %} ">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,600,700,300italic,400italic,600italic">
+
+    <style>
+  /* --- GLOBAL BACKGROUND SETUP --- */
+  body.login-page {
+    /* Background setup with your uploaded image */
+    background: linear-gradient(rgba(50, 100, 150, 0.5), rgba(50, 100, 150, 0.5)), 
+                url("{% static 'images/bg.png' %}"); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    height: 100vh;
+    overflow: hidden; /* Prevents scrollbars on simple login/reg pages */
+  }
+
+  /* Mobile scrolling fix */
+  @media (max-width: 768px) {
+    body.login-page {
+      height: auto;
+      min-height: 100vh;
+      overflow: auto;
+      background-attachment: scroll;
+    }
+  }
+
+  /* --- GLASSMORPHISM EFFECT --- */
+  .login-box-body, .register-box-body {
+    background: rgba(255, 255, 255, 0.85) !important; /* Slight transparency */
+    backdrop-filter: blur(12px); /* Frosty glass effect */
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 35px;
+  }
+
+  /* --- LOGO PULSE & ENTRANCE --- */
+  @keyframes breath {
+    0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(0, 195, 255, 0)); }
+    50% { transform: scale(1.05); filter: drop-shadow(0 0 20px rgba(0, 195, 255, 0.6)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(0, 195, 255, 0)); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-logo {
+    animation: fadeUp 0.8s ease-out forwards;
+    margin-bottom: 20px;
+  }
+
+  .login-logo img {
+    animation: breath 4s ease-in-out infinite;
+    max-width: 100px;
+  }
+
+  .login-logo b {
+    color: #ff6b35 !important; /* Orange color */
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+    letter-spacing: 2px;
+  }
+
+  /* --- BUTTON TWEAKS --- */
+  .btn-flat {
+    border-radius: 8px !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+  }
+
+  /* Existing Styles preserved */
+  .mt20{ margin-top: 20px; }
+  .title{ font-size: 50px; }
+  .votelist{ font-size: 17px; }
+    </style>    
+</head>
+<body class="hold-transition login-page">
+  
+  {% block content %}
+    {% endblock content %}
+
+  <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+  <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'plugins/iCheck/icheck.min.js' %}"></script>
+  <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+  <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+  <script src="{% static 'toastr/toastr.min.js' %}"></script>
+
+  <script>
+    $(function () {
+      $('#example1').DataTable()
+      var bookTable = $('#booklist').DataTable({
+        'paging'      : true,
+        'lengthChange': false,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : false,
+        'autoWidth'   : false
+      })
+      $('#searchBox').on('keyup', function(){
+        bookTable.search(this.value).draw();
+      });
+    })
+  </script>
+
+  {% if messages %}
+    {% for message in messages %}
+    <script>
+        toastr.{{ message.tags }}('{{ message }}', '{{ message.tags|title }}');
+    </script>
+    {% endfor %}
+  {% endif %}
+</body>
+</html>

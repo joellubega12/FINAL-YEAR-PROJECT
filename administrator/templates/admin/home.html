@@ -1,0 +1,158 @@
+{% extends 'root.html' %}
+{% load static %}
+{% block content %}
+<!-- Main content -->
+    <section class="content">
+            <!-- Small boxes (Stat box) -->
+      <div class="row">
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-orange">
+            <div class="inner">
+              <h3>{{ position_count }}</h3>
+              <p>Number of Positions</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-tasks"></i>
+            </div>
+            <a href="{% url 'viewPositions' %}" class="small-box-footer">More Info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-purple">
+            <div class="inner">
+              <h3>{{ candidate_count }}</h3>          
+              <p>Number of Candidates</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-black-tie"></i>
+            </div>
+            <a href="{% url 'viewCandidates' %}" class="small-box-footer">More Info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-teal">
+            <div class="inner">
+              <h3>{{ voters_count }}</h3>             
+              <p>Total Registered Voters</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-users"></i>
+            </div>
+            <a href="{% url 'adminViewVoters' %}" class="small-box-footer">More Info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-pink">
+            <div class="inner">
+              <h3>{{ voted_voters_count }}</h3>
+              <p>Voters Who Have Voted</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-edit"></i>
+            </div>
+            <a href="{% url 'viewVotes' %}" class="small-box-footer">More Info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <h3>Election Results Summary
+            <span class="pull-right">
+              <a href="{% url 'printResult' %}" class="btn btn-success btn-sm btn-flat"><span class="glyphicon glyphicon-print"></span> Print/Download PDF <i class="fa fa-download"></i></a>
+            </span>
+          </h3>
+        </div>
+      </div>
+
+     {% for position in positions %}
+     {% if not forloop.counter|divisibleby:2 %}
+     <div class='row'>
+     {% endif %}
+     <div class='col-sm-6'>
+      <div class='box box-solid'>
+        <div class='box-header with-border'>
+          <h4 class='box-title'><b>{{ position.name }}</b></h4>
+        </div>
+        <div class='box-body'>
+          <div class='chart'>
+            <canvas id='{{ position.name|slugify }}' style='height:200px'></canvas>
+          </div>
+          <div id="legend_{{ position.id }}" class="chart-legend"></div>
+        </div>
+      </div>
+    </div>
+    {% if forloop.counter|divisibleby:2 %}
+     </div>
+     {% endif %}
+
+     {% endfor %}
+     {% if not forloop.counter|divisibleby:2 %}
+     </div>
+     {% endif %}
+      </section>
+      
+      {% endblock content %}
+
+      <!-- New Block -->
+      {% block custom_js %}
+      <script src="{% static 'bower_components/chart.js/Chart.js' %}"></script>
+      
+{% for key, value in chart_data.items  %}
+<script>
+  $(function() {
+    var rowid = '{{ value.pos_id }}';
+    var description = '{{ key|safe|slugify }}';
+    var ctx = $('#' + description).get(0).getContext('2d');
+    
+    // Define colors for the pie chart
+    var colors = [
+      { color: '#FF6384', highlight: '#FF6384' },
+      { color: '#36A2EB', highlight: '#36A2EB' },
+      { color: '#FFCE56', highlight: '#FFCE56' },
+      { color: '#4BC0C0', highlight: '#4BC0C0' },
+      { color: '#9966FF', highlight: '#9966FF' },
+      { color: '#FF9F40', highlight: '#FF9F40' },
+      { color: '#C7C7C7', highlight: '#C7C7C7' },
+      { color: '#5366FF', highlight: '#5366FF' },
+      { color: '#FF63FF', highlight: '#FF63FF' },
+      { color: '#63FF84', highlight: '#63FF84' }
+    ];
+    
+    var candidates = {{ value.candidates|safe }};
+    var votes = {{ value.votes|safe }};
+    var totalVotes = votes.reduce(function(a, b) { return a + b; }, 0);
+    
+    var pieData = [];
+    for (var i = 0; i < candidates.length; i++) {
+      var percentage = totalVotes > 0 ? Math.round((votes[i] / totalVotes) * 100) : 0;
+      pieData.push({
+        value: votes[i],
+        color: colors[i % colors.length].color,
+        highlight: colors[i % colors.length].highlight,
+        label: candidates[i] + ' (' + percentage + '%)'
+      });
+    }
+    
+    var myPieChart = new Chart(ctx).Pie(pieData);
+    
+    // Generate legend
+    var legendHtml = "<ul class='pie-legend'>";
+    for (var i = 0; i < pieData.length; i++) {
+      legendHtml += "<li><span style='background-color:" + pieData[i].color + "; display: inline-block; width: 12px; height: 12px; margin-right: 5px;'></span>" + pieData[i].label + "</li>";
+    }
+    legendHtml += "</ul>";
+    $('#legend_' + rowid).html(legendHtml);
+  });
+</script>
+{% endfor %}
+
+{% endblock custom_js %}

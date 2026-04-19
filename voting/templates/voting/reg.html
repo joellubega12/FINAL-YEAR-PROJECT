@@ -1,0 +1,289 @@
+{% extends "voting/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    
+    body {
+        background-color: #138a76; /* Soft neutral background */
+        font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .registration-container {
+        margin-top: 60px;
+        margin-bottom: 60px;
+    }
+
+    .login-box-body {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Soft depth */
+        transition: transform 0.3s ease;
+    }
+
+    /* Mobile responsive padding */
+    @media (max-width: 768px) {
+        .login-box-body {
+            padding: 25px;
+        }
+        .registration-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .login-box-body {
+            padding: 20px;
+        }
+    }
+
+    /* Modernizing Input Fields */
+    .form-group label {
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    /* Target the Django-rendered inputs */
+    input[type="text"], input[type="password"], input[type="email"], .form-control {
+        height: 45px;
+        border-radius: 8px !important;
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+        box-shadow: none;
+    }
+
+    input:focus {
+        border-color: #3c8dbc !important;
+        box-shadow: 0 0 0 3px rgba(60, 141, 188, 0.1) !important;
+        outline: none;
+    }
+
+    /* Buttons */
+    .btn-flat {
+        border-radius: 8px !important;
+        padding: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: #3c8dbc;
+        box-shadow: 0 4px 12px rgba(60, 141, 188, 0.2);
+    }
+
+    .btn-primary:hover {
+        background-color: #337ab7;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(60, 141, 188, 0.3);
+    }
+
+    .btn-success {
+        background-color: #2ecc71;
+        box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+    }
+
+    .btn-success:hover {
+        background-color: #27ae60;
+        transform: translateY(-1px);
+    }
+
+    .login-logo b {
+        color: #333;
+        letter-spacing: 2px;
+    }
+
+    .logo-img {
+        max-width: 90px;
+        width: 100%;
+        height: auto;
+    }
+
+    hr {
+        border-top: 1px solid #eee;
+        margin: 25px 0;
+    }
+
+    /* Mobile friendly OTP button */
+    @media (max-width: 768px) {
+        #sendOtpBtn {
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        .email-field-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .logo-img {
+            max-width: 70px;
+        }
+
+        .login-logo h3 {
+            font-size: 1.8rem;
+            margin: 10px 0;
+        }
+
+        hr {
+            margin: 15px 0;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"], .form-control {
+            height: 40px;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 10px 8px;
+            font-size: 0.9rem;
+        }
+
+        .text-center p {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .logo-img {
+            max-width: 60px;
+        }
+
+        .login-logo h3 {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (min-width: 769px) {
+        .email-field-wrapper {
+            display: flex;
+            gap: 5px;
+            align-items: flex-end;
+        }
+
+        #sendOtpBtn {
+            white-space: nowrap;
+            margin-bottom: 0;
+        }
+    }
+
+</style>
+
+<div class="container registration-container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+            
+            <div class="login-logo text-center">
+                <img src="{% static 'images/logo.png' %}" class="logo-img" style="margin-bottom: 15px;">
+                <h3><b>VOTLY</b></h3>
+            </div>
+
+            <div class="login-box-body">
+                <form action="{% url 'account_register' %}" method="POST" id="regForm">
+                    {% csrf_token %}
+
+                    {% for field in form1 %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        <span class="text-danger small">{{ field.errors }}</span>
+                        {% if field.name == 'email' %}
+                            <div class="email-field-wrapper">
+                                {{ field }}
+                                <button type="button" id="sendOtpBtn" class="btn btn-info btn-sm">Send OTP</button>
+                            </div>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    {% for field in form2 %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        <span class="text-danger small">{{ field.errors }}</span>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+
+                    <hr>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">
+                        <i class="fa fa-user-plus"></i> &nbsp; Create Account
+                    </button>
+                    
+                    <div class="text-center" style="margin-top: 20px;">
+                        <p class="text-muted small">Already have an account?</p>
+                        <a href="{% url 'account_login' %}" class="btn btn-success btn-block btn-flat">
+                            <i class="fa fa-sign-in"></i> &nbsp; Log In
+                        </a>
+                    </div>
+                </form>
+
+                <script>
+                    document.getElementById('sendOtpBtn').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const emailField = document.querySelector('input[name="email"]');
+                        const email = emailField.value.trim();
+                        
+                        if (!email) {
+                            alert('Please enter your email first');
+                            emailField.focus();
+                            return;
+                        }
+                        
+                        // Show loading state
+                        const btn = this;
+                        btn.disabled = true;
+                        btn.textContent = 'Sending...';
+                        
+                        // Send OTP
+                        fetch('{% url "send_otp" %}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: 'email=' + encodeURIComponent(email)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                btn.textContent = '✓ OTP Sent';
+                                btn.style.backgroundColor = '#28a745';
+                                btn.style.color = 'white';
+                            } else {
+                                alert('Error: ' + data.error);
+                                btn.disabled = false;
+                                btn.textContent = 'Send OTP';
+                            }
+                        })
+                        .catch(error => {
+                            alert('Failed to send OTP: ' + error);
+                            btn.disabled = false;
+                            btn.textContent = 'Send OTP';
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
